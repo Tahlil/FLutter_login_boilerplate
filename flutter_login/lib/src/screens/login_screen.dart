@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import '../miixins/validation_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
   final formKey = GlobalKey<FormState>();
+  String email = "", password = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,15 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
           labelText: 'Email Address', hintText: "you@example.com"),
-      validator: (String value) {
-        Pattern pattern =
-            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-        RegExp regex = new RegExp(pattern);
-        if (!regex.hasMatch(value))
-          return 'Please Enter Valid Email';
-      },
+      validator: validateEmail,
       onSaved: (String value){
-        print(value);
+        email = value;
       },
     );
   }
@@ -57,13 +54,9 @@ class _LoginScreenState extends State<LoginScreen> {
       obscureText: true,
       decoration:
           InputDecoration(labelText: 'Password', hintText: "min 8 characters"),
-      validator: (String value) {
-        if (value.length < 8) {
-          return "Password must be at least 8 characters";
-        }
-      },
+      validator: validatePassword,
       onSaved: (String value){
-        print(value);
+        password = value;
       },
     );
   }
@@ -77,7 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       onPressed: () {
         if(formKey.currentState.validate()){
-          formKey.currentState.save();    
+          formKey.currentState.save();  
+          print("Time to post $email and $password to my API");  
         }
         //formKey.currentState.reset();
       },
